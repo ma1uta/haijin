@@ -1,0 +1,43 @@
+homeserverUrl: "https://plyuk.rocks:8448"
+displayName: "haijin"
+username: "@haijin:plyuk.rocks"
+password: "1q2w3e4r"
+patternLocation: "/home/tolya/dev/haijin/patterns.properties"
+prefix: "!"
+initialRoom: "!KOBRBRfhEbeyUpDRLI:plyuk.rocks"
+commands:
+  - io.github.ma1uta.matrix.bot.command.Leave
+  - io.github.ma1uta.matrix.bot.command.NewName
+  - io.github.ma1uta.matrix.bot.command.Pong
+  - io.github.ma1uta.matrix.bot.command.SetAccessPolicy
+  - io.github.ma1uta.matrix.bot.command.Join
+  - io.github.ma1uta.matrix.bot.command.Prefix
+  - io.github.ma1uta.matrix.bot.command.DefaultCommand
+  - io.github.ma1uta.matrix.bot.command.Help
+  - io.github.ma1uta.haijin.command.Quote
+
+httpClient:
+  gzipEnabled: false
+  gzipEnabledForRequests: false
+  chunkedEncodingEnabled: false
+  timeout: 20s
+logging:
+  level: ERROR
+  appenders:
+    - type: console
+      target: stderr
+    - type: file
+      currentLogFilename: haijin.log
+      archive: true
+      archivedLogFilenamePattern: haijin-%d.log
+      archivedFileCount: 2
+      immediateFlush: true
+server:
+  applicationConnectors:
+    - type: http
+      port: 8888
+      bindHost: 127.0.0.1
+  adminConnectors:
+    - type: http
+      port: 8889
+      bindHost: 127.0.0.1
