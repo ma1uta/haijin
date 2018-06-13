@@ -48,12 +48,13 @@ public class Quote implements Command<HaijinConfig, HaijinDao, PersistentService
     }
 
     @Override
-    public void invoke(BotHolder<HaijinConfig, HaijinDao, PersistentService<HaijinDao>, Object> holder, Event event, String arguments) {
+    public void invoke(BotHolder<HaijinConfig, HaijinDao, PersistentService<HaijinDao>, Object> holder, String roomId, Event event,
+                       String arguments) {
         HaijinConfig config = holder.getConfig();
         MatrixClient matrixClient = holder.getMatrixClient();
 
         if (arguments == null || arguments.trim().isEmpty()) {
-            matrixClient.event().sendNotice(config.getRoomId(), "Usage: " + usage());
+            matrixClient.event().sendNotice(roomId, "Usage: " + usage());
             return;
         }
 
@@ -61,7 +62,7 @@ public class Quote implements Command<HaijinConfig, HaijinDao, PersistentService
         Optional<String> siteKey = config.getProps().stringPropertyNames().stream()
             .filter(sitePattern -> sitePattern.contains(siteArgument)).findFirst();
         if (!siteKey.isPresent()) {
-            matrixClient.event().sendNotice(config.getRoomId(), "Cannot found pattern for site: " + siteArgument);
+            matrixClient.event().sendNotice(roomId, "Cannot found pattern for site: " + siteArgument);
             return;
         }
         String siteAddress = siteKey.get();
@@ -74,7 +75,7 @@ public class Quote implements Command<HaijinConfig, HaijinDao, PersistentService
         } catch (MalformedURLException e) {
             String msg = "wrong site url: " + e.getMessage();
             LOGGER.error(msg, e);
-            matrixClient.event().sendNotice(config.getRoomId(), msg);
+            matrixClient.event().sendNotice(roomId, msg);
             return;
         }
 
@@ -84,7 +85,7 @@ public class Quote implements Command<HaijinConfig, HaijinDao, PersistentService
         } catch (IOException e) {
             String msg = "Cannot read url: " + siteArgument;
             LOGGER.error(msg, e);
-            matrixClient.event().sendNotice(config.getRoomId(), msg);
+            matrixClient.event().sendNotice(roomId, msg);
             return;
         }
 
@@ -92,9 +93,9 @@ public class Quote implements Command<HaijinConfig, HaijinDao, PersistentService
         if (matcher.find()) {
             String quote = matcher.group(1);
 
-            matrixClient.event().sendNotice(config.getRoomId(), quote);
+            matrixClient.event().sendNotice(roomId, quote);
         } else {
-            matrixClient.event().sendNotice(config.getRoomId(), "Nothing.");
+            matrixClient.event().sendNotice(roomId, "Nothing.");
         }
     }
 
@@ -105,6 +106,6 @@ public class Quote implements Command<HaijinConfig, HaijinDao, PersistentService
 
     @Override
     public String usage() {
-        return "!quote <site>";
+        return "quote <site>";
     }
 }

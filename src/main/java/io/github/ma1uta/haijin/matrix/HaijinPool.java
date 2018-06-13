@@ -21,7 +21,7 @@ import io.github.ma1uta.haijin.Configuration;
 import io.github.ma1uta.matrix.bot.Bot;
 import io.github.ma1uta.matrix.bot.BotState;
 import io.github.ma1uta.matrix.bot.PersistentService;
-import io.github.ma1uta.matrix.client.model.room.RoomId;
+import io.github.ma1uta.matrix.client.MatrixClient;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -76,49 +76,30 @@ public class HaijinPool implements Managed {
             throw new IllegalArgumentException(String.format("Cannot read file: %s", location));
         }
 
+        HaijinConfig config = new HaijinConfig();
+
         Properties props = new Properties();
         props.load(Files.newInputStream(path));
+        config.setProps(props);
 
-        String txnid = props.getProperty(HaijinDao.TXN_ID);
-        long txn = txnid == null ? 0L : Long.parseLong(txnid);
-
-
-        HaijinConfig config = new HaijinConfig();
         config.setPatternLocation(configuration.getPatternLocation());
-        config.setTxnId(txn);
+        config.setTxnId(System.currentTimeMillis());
         config.setDisplayName(configuration.getDisplayName());
         config.setDeviceId(configuration.getDeviceId());
-        config.setNextBatch(props.getProperty(HaijinDao.NEXT_BATCH));
         config.setUserId(configuration.getUsername());
         config.setPassword(configuration.getPassword());
         config.setTimeout(configuration.getHttpClient().getTimeout().toMilliseconds() / 2);
-        config.setState(BotState.JOINED);
-        String roomId = props.getProperty(HaijinDao.ROOM);
-        boolean joinToInitialRoom = false;
-        if (roomId == null) {
-            joinToInitialRoom = true;
-            config.setRoomId(configuration.getInitialRoom());
-        } else {
-            config.setRoomId(roomId);
-        }
+        config.setSkipInitialSync(true);
 
-        props.remove(HaijinDao.TXN_ID);
-        props.remove(HaijinDao.NEXT_BATCH);
-        props.remove(HaijinDao.ROOM);
-
-        config.setProps(props);
 
         Bot<HaijinConfig, HaijinDao, PersistentService<HaijinDao>, Object> bot = new Bot<>(
-            getClient(), configuration.getHomeserverUrl(), null, false, true, config, new PersistentService<>(new HaijinDao()),
+            getClient(), configuration.getHomeserverUrl(), null, false, true, false, config, new PersistentService<>(new HaijinDao()),
             configuration.getCommands());
 
-        if (joinToInitialRoom) {
-            bot.setInitAction((holder, dao) -> {
-                HaijinConfig config1 = holder.getConfig();
-                RoomId joinedRoom = holder.getMatrixClient().room().joinRoomByIdOrAlias(config1.getRoomId());
-                config1.setRoomId(joinedRoom.getRoomId());
-            });
-        }
+        bot.setInitAction((holder, dao) -> {
+            MatrixClient matrixClient = holder.getMatrixClient();
+            holder.getConfig().setState(matrixClient.room().joinedRooms().isEmpty() ? BotState.REGISTERED : BotState.JOINED);
+        });
 
         getExecutorService().submit(bot);
     }

@@ -26,27 +26,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Persist only props and txnid.
  */
 public class HaijinDao implements BotDao<HaijinConfig> {
-
-    /**
-     * Transaction id.
-     */
-    public static final String TXN_ID = "0.txnid";
-
-    /**
-     * Next batch.
-     */
-    public static final String NEXT_BATCH = "0.next_batch";
-
-    /**
-     * Room where bot is live.
-     */
-    public static final String ROOM = "0.room";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HaijinDao.class);
 
@@ -64,14 +48,8 @@ public class HaijinDao implements BotDao<HaijinConfig> {
     public HaijinConfig save(HaijinConfig data) {
         Path path = Paths.get(data.getPatternLocation());
         if (Files.exists(path) && Files.isRegularFile(path) && Files.isWritable(path)) {
-            Properties props = data.getProps();
-            Properties propertiesToSave = new Properties(props);
-            props.stringPropertyNames().forEach(propName -> propertiesToSave.setProperty(propName, props.getProperty(propName)));
-            propertiesToSave.setProperty(TXN_ID, Long.toString(data.getTxnId()));
-            propertiesToSave.setProperty(NEXT_BATCH, data.getNextBatch());
-            propertiesToSave.setProperty(ROOM, data.getRoomId());
             try {
-                propertiesToSave.store(Files.newOutputStream(path), "haijin patterns");
+                data.getProps().store(Files.newOutputStream(path), "haijin patterns");
             } catch (IOException e) {
                 LOGGER.error("Cannot store props.");
             }
