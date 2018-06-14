@@ -23,11 +23,6 @@ import io.github.ma1uta.matrix.bot.BotState;
 import io.github.ma1uta.matrix.bot.PersistentService;
 import io.github.ma1uta.matrix.client.MatrixClient;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -60,29 +55,10 @@ public class HaijinPool implements Managed {
     }
 
     @Override
-    public void start() throws IOException {
-        String location = configuration.getPatternLocation();
-        Path path = Paths.get(location);
-
-        if (!Files.exists(path)) {
-            throw new IllegalArgumentException(String.format("File not found: %s", location));
-        }
-
-        if (!Files.isRegularFile(path)) {
-            throw new IllegalArgumentException(String.format("File isn't regular: %s", location));
-        }
-
-        if (!Files.isReadable(path)) {
-            throw new IllegalArgumentException(String.format("Cannot read file: %s", location));
-        }
-
+    public void start() {
         HaijinConfig config = new HaijinConfig();
 
-        Properties props = new Properties();
-        props.load(Files.newInputStream(path));
-        config.setProps(props);
-
-        config.setPatternLocation(configuration.getPatternLocation());
+        config.setPatterns(configuration.getPatterns());
         config.setTxnId(System.currentTimeMillis());
         config.setDisplayName(configuration.getDisplayName());
         config.setDeviceId(configuration.getDeviceId());
@@ -90,7 +66,7 @@ public class HaijinPool implements Managed {
         config.setPassword(configuration.getPassword());
         config.setTimeout(configuration.getHttpClient().getTimeout().toMilliseconds() / 2);
         config.setSkipInitialSync(true);
-
+        config.setDefaultCommand(configuration.getDefaultCommand());
 
         Bot<HaijinConfig, HaijinDao, PersistentService<HaijinDao>, Object> bot = new Bot<>(
             getClient(), configuration.getHomeserverUrl(), null, false, true, false, config, new PersistentService<>(new HaijinDao()),

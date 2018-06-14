@@ -1,9 +1,17 @@
+patterns:
+  - alias: "1"
+    url: "http://google.com"
+    selector: "div.someclass1"
+  - alias: "2"
+    url: "http://yandex.ru"
+    selector: "div.someclass2"
+
 homeserverUrl: "https://matrix.homeserver.me:8448"
 displayName: "haijin"
 username: "@haijin:matrix.homeserver.me"
 password: "1q2w3e4r"
-patternLocation: "/path/to/patterns.properties"
 prefix: "!"
+defaultCommand: "quote"
 commands:
   - io.github.ma1uta.matrix.bot.command.Leave
   - io.github.ma1uta.matrix.bot.command.NewName

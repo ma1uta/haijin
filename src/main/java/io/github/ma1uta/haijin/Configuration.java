@@ -55,15 +55,13 @@ public class Configuration extends io.dropwizard.Configuration {
     @NotBlank
     private String password;
 
-    @NotBlank
-    private String patternLocation;
-
     private String deviceId;
 
-    @NotBlank
-    private String initialRoom;
+    private String defaultCommand;
 
     private List<Class<? extends Command<HaijinConfig, HaijinDao, PersistentService<HaijinDao>, Object>>> commands = new ArrayList<>();
+
+    private List<PatternConfig> patterns;
 
     public JerseyClientConfiguration getHttpClient() {
         return httpClient;
@@ -105,14 +103,6 @@ public class Configuration extends io.dropwizard.Configuration {
         this.password = password;
     }
 
-    public String getPatternLocation() {
-        return patternLocation;
-    }
-
-    public void setPatternLocation(String patternLocation) {
-        this.patternLocation = patternLocation;
-    }
-
     public List<Class<? extends Command<HaijinConfig, HaijinDao, PersistentService<HaijinDao>, Object>>> getCommands() {
         return commands;
     }
@@ -130,11 +120,19 @@ public class Configuration extends io.dropwizard.Configuration {
         this.deviceId = deviceId;
     }
 
-    public String getInitialRoom() {
-        return initialRoom;
+    public List<PatternConfig> getPatterns() {
+        return patterns;
     }
 
-    public void setInitialRoom(String initialRoom) {
-        this.initialRoom = initialRoom;
+    public void setPatterns(List<PatternConfig> patterns) {
+        this.patterns = patterns;
+    }
+
+    public String getDefaultCommand() {
+        return defaultCommand;
+    }
+
+    public void setDefaultCommand(String defaultCommand) {
+        this.defaultCommand = defaultCommand;
     }
 }

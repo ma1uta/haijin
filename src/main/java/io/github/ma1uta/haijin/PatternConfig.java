@@ -14,25 +14,40 @@
  * limitations under the License.
  */
 
-package io.github.ma1uta.haijin.matrix;
-
-import io.github.ma1uta.haijin.PatternConfig;
-import io.github.ma1uta.matrix.bot.BotConfig;
-
-import java.util.List;
+package io.github.ma1uta.haijin;
 
 /**
- * All settings store in the properties files.
+ * Pattern config to retrieve quote.
  */
-public class HaijinConfig extends BotConfig {
+public class PatternConfig {
 
-    private List<PatternConfig> patterns;
+    private String alias;
 
-    public List<PatternConfig> getPatterns() {
-        return patterns;
+    private String url;
+
+    private String selector;
+
+    public String getAlias() {
+        return alias;
     }
 
-    public void setPatterns(List<PatternConfig> patterns) {
-        this.patterns = patterns;
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getSelector() {
+        return selector;
+    }
+
+    public void setSelector(String selector) {
+        this.selector = selector;
     }
 }

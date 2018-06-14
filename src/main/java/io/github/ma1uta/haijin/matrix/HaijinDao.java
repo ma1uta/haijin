@@ -20,10 +20,6 @@ import io.github.ma1uta.matrix.bot.BotDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,14 +42,6 @@ public class HaijinDao implements BotDao<HaijinConfig> {
 
     @Override
     public HaijinConfig save(HaijinConfig data) {
-        Path path = Paths.get(data.getPatternLocation());
-        if (Files.exists(path) && Files.isRegularFile(path) && Files.isWritable(path)) {
-            try {
-                data.getProps().store(Files.newOutputStream(path), "haijin patterns");
-            } catch (IOException e) {
-                LOGGER.error("Cannot store props.");
-            }
-        }
         return data;
     }
 

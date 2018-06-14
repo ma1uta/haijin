@@ -16,6 +16,7 @@
 
 package io.github.ma1uta.haijin.command;
 
+import io.github.ma1uta.haijin.PatternConfig;
 import io.github.ma1uta.haijin.matrix.HaijinConfig;
 import io.github.ma1uta.haijin.matrix.HaijinDao;
 import io.github.ma1uta.matrix.Event;
@@ -24,6 +25,8 @@ import io.github.ma1uta.matrix.bot.Command;
 import io.github.ma1uta.matrix.bot.PersistentService;
 import io.github.ma1uta.matrix.client.MatrixClient;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,8 +34,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Find quote on the selected site.
@@ -58,17 +59,14 @@ public class Quote implements Command<HaijinConfig, HaijinDao, PersistentService
             return;
         }
 
-        String siteArgument = arguments.trim();
-        Optional<String> siteKey = config.getProps().stringPropertyNames().stream()
-            .filter(sitePattern -> sitePattern.contains(siteArgument)).findFirst();
-        if (!siteKey.isPresent()) {
-            matrixClient.event().sendNotice(roomId, "Cannot found pattern for site: " + siteArgument);
+        String alias = arguments.trim();
+        Optional<PatternConfig> patternConfig = config.getPatterns().stream().filter(pc -> pc.getAlias().equals(alias)).findFirst();
+
+        if (!patternConfig.isPresent()) {
             return;
         }
-        String siteAddress = siteKey.get();
-        String regexp = config.getProps().getProperty(siteAddress);
-        Pattern pattern = Pattern.compile(regexp);
 
+        String siteAddress = patternConfig.get().getUrl();
         URL url;
         try {
             url = new URL(siteAddress);
@@ -79,23 +77,20 @@ public class Quote implements Command<HaijinConfig, HaijinDao, PersistentService
             return;
         }
 
-        String html;
+        Elements elements;
         try {
-            html = Jsoup.parse(url, TIMEOUT).html();
+            elements = Jsoup.parse(url, TIMEOUT).select(patternConfig.get().getSelector());
         } catch (IOException e) {
-            String msg = "Cannot read url: " + siteArgument;
+            String msg = "Cannot read url: " + alias;
             LOGGER.error(msg, e);
             matrixClient.event().sendNotice(roomId, msg);
             return;
         }
 
-        Matcher matcher = pattern.matcher(html);
-        if (matcher.find()) {
-            String quote = matcher.group(1);
-
-            matrixClient.event().sendNotice(roomId, quote);
-        } else {
-            matrixClient.event().sendNotice(roomId, "Nothing.");
+        for (Element element : elements) {
+            String htmlText = element.text();
+            String plainText = Jsoup.parse(htmlText).text();
+            matrixClient.event().sendFormattedNotice(roomId, plainText, htmlText);
         }
     }
 
