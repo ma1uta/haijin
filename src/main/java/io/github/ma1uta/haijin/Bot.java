@@ -62,7 +62,7 @@ public class Bot extends Application<Configuration> {
     @SuppressWarnings("unchecked")
     private void matrixBot(Configuration configuration, Environment environment) {
         environment.getObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-        environment.getObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+        environment.getObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         Client client = new JerseyClientBuilder(environment).using(configuration.getHttpClient()).build("client");
 

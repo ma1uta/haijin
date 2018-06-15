@@ -59,7 +59,6 @@ public class HaijinPool implements Managed {
         HaijinConfig config = new HaijinConfig();
 
         config.setPatterns(configuration.getPatterns());
-        config.setTxnId(System.currentTimeMillis());
         config.setDisplayName(configuration.getDisplayName());
         config.setDeviceId(configuration.getDeviceId());
         config.setUserId(configuration.getUsername());
