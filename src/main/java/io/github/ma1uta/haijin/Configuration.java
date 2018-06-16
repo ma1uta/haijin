@@ -63,6 +63,8 @@ public class Configuration extends io.dropwizard.Configuration {
 
     private List<PatternConfig> patterns;
 
+    private String owner;
+
     public JerseyClientConfiguration getHttpClient() {
         return httpClient;
     }
@@ -134,5 +136,13 @@ public class Configuration extends io.dropwizard.Configuration {
 
     public void setDefaultCommand(String defaultCommand) {
         this.defaultCommand = defaultCommand;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 }

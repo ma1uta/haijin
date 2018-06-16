@@ -12,6 +12,7 @@ username: "@haijin:matrix.homeserver.me"
 password: "1q2w3e4r"
 prefix: "!"
 defaultCommand: "quote"
+owner: "@admin:matrix.homeserver.me"
 commands:
   - io.github.ma1uta.matrix.bot.command.Leave
   - io.github.ma1uta.matrix.bot.command.NewName

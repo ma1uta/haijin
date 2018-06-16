@@ -66,6 +66,7 @@ public class HaijinPool implements Managed {
         config.setTimeout(configuration.getHttpClient().getTimeout().toMilliseconds() / 2);
         config.setSkipInitialSync(true);
         config.setDefaultCommand(configuration.getDefaultCommand());
+        config.setOwner(configuration.getOwner());
 
         Bot<HaijinConfig, HaijinDao, PersistentService<HaijinDao>, Object> bot = new Bot<>(
             getClient(), configuration.getHomeserverUrl(), null, false, true, false, config, new PersistentService<>(new HaijinDao()),
