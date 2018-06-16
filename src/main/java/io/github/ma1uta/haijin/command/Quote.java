@@ -87,9 +87,14 @@ public class Quote implements Command<HaijinConfig, HaijinDao, PersistentService
             return;
         }
 
-        for (Element element : elements) {
-            String htmlText = element.text();
-            String plainText = Jsoup.parse(htmlText).text();
+        if (!elements.isEmpty()) {
+            Element element = elements.first();
+            Elements links = element.select("a");
+            for (Element link : links) {
+                link.remove();
+            }
+            String htmlText = element.html();
+            String plainText = element.text();
             matrixClient.event().sendFormattedNotice(roomId, plainText, htmlText);
         }
     }
