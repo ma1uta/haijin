@@ -49,21 +49,21 @@ public class Quote implements Command<HaijinConfig, HaijinDao, PersistentService
     }
 
     @Override
-    public void invoke(BotHolder<HaijinConfig, HaijinDao, PersistentService<HaijinDao>, Object> holder, String roomId, Event event,
+    public boolean invoke(BotHolder<HaijinConfig, HaijinDao, PersistentService<HaijinDao>, Object> holder, String roomId, Event event,
                        String arguments) {
         HaijinConfig config = holder.getConfig();
         MatrixClient matrixClient = holder.getMatrixClient();
 
         if (arguments == null || arguments.trim().isEmpty()) {
             matrixClient.event().sendNotice(roomId, "Usage: " + usage());
-            return;
+            return false;
         }
 
         String alias = arguments.trim();
         Optional<PatternConfig> patternConfig = config.getPatterns().stream().filter(pc -> pc.getAlias().equals(alias)).findFirst();
 
         if (!patternConfig.isPresent()) {
-            return;
+            return false;
         }
 
         String siteAddress = patternConfig.get().getUrl();
@@ -74,7 +74,7 @@ public class Quote implements Command<HaijinConfig, HaijinDao, PersistentService
             String msg = "wrong site url: " + e.getMessage();
             LOGGER.error(msg, e);
             matrixClient.event().sendNotice(roomId, msg);
-            return;
+            return true;
         }
 
         Elements elements;
@@ -84,7 +84,7 @@ public class Quote implements Command<HaijinConfig, HaijinDao, PersistentService
             String msg = "Cannot read url: " + alias;
             LOGGER.error(msg, e);
             matrixClient.event().sendNotice(roomId, msg);
-            return;
+            return true;
         }
 
         if (!elements.isEmpty()) {
@@ -97,6 +97,7 @@ public class Quote implements Command<HaijinConfig, HaijinDao, PersistentService
             String plainText = element.text();
             matrixClient.event().sendFormattedNotice(roomId, plainText, htmlText);
         }
+        return true;
     }
 
     @Override

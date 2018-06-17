@@ -23,6 +23,7 @@ import io.github.ma1uta.haijin.matrix.HaijinConfig;
 import io.github.ma1uta.haijin.matrix.HaijinDao;
 import io.github.ma1uta.matrix.bot.Command;
 import io.github.ma1uta.matrix.bot.PersistentService;
+import io.github.ma1uta.matrix.bot.ReceiptPolicy;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.hibernate.validator.constraints.URL;
@@ -64,6 +65,8 @@ public class Configuration extends io.dropwizard.Configuration {
     private List<PatternConfig> patterns;
 
     private String owner;
+
+    private ReceiptPolicy receiptPolicy;
 
     public JerseyClientConfiguration getHttpClient() {
         return httpClient;
@@ -144,5 +147,13 @@ public class Configuration extends io.dropwizard.Configuration {
 
     public void setOwner(String owner) {
         this.owner = owner;
+    }
+
+    public ReceiptPolicy getReceiptPolicy() {
+        return receiptPolicy;
+    }
+
+    public void setReceiptPolicy(ReceiptPolicy receiptPolicy) {
+        this.receiptPolicy = receiptPolicy;
     }
 }
