@@ -59,7 +59,6 @@ public class Bot extends Application<Configuration> {
         bootstrap.getObjectMapper().enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY);
     }
 
-    @SuppressWarnings("unchecked")
     private void matrixBot(Configuration configuration, Environment environment) {
         environment.getObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
         environment.getObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
