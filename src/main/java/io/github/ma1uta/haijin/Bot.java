@@ -57,11 +57,12 @@ public class Bot extends Application<Configuration> {
         bootstrap.addBundle(new SslReloadBundle());
 
         bootstrap.getObjectMapper().enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY);
+        bootstrap.getObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+        bootstrap.getObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        bootstrap.getObjectMapper().configure(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE, false);
     }
 
     private void matrixBot(Configuration configuration, Environment environment) {
-        environment.getObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-        environment.getObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         Client client = new JerseyClientBuilder(environment).using(configuration.getHttpClient()).build("client");
 

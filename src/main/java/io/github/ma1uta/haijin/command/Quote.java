@@ -26,6 +26,7 @@ import io.github.ma1uta.matrix.bot.PersistentService;
 import io.github.ma1uta.matrix.client.MatrixClient;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
+import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,12 +90,8 @@ public class Quote implements Command<HaijinConfig, HaijinDao, PersistentService
 
         if (!elements.isEmpty()) {
             Element element = elements.first();
-            Elements links = element.select("a");
-            for (Element link : links) {
-                link.remove();
-            }
-            String htmlText = element.html();
-            String plainText = element.text();
+            String htmlText = Jsoup.clean(element.html(), new Whitelist().addTags("br"));
+            String plainText = htmlText.replaceAll("<br>", "\n").replaceAll("<br/>", "\n");
             matrixClient.event().sendFormattedNotice(roomId, plainText, htmlText);
         }
         return true;
