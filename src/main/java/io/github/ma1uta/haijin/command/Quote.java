@@ -16,6 +16,8 @@
 
 package io.github.ma1uta.haijin.command;
 
+import static java.util.stream.Collectors.toList;
+
 import io.github.ma1uta.haijin.PatternConfig;
 import io.github.ma1uta.haijin.matrix.HaijinConfig;
 import io.github.ma1uta.haijin.matrix.HaijinDao;
@@ -34,6 +36,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -51,7 +56,7 @@ public class Quote implements Command<HaijinConfig, HaijinDao, PersistentService
 
     @Override
     public boolean invoke(BotHolder<HaijinConfig, HaijinDao, PersistentService<HaijinDao>, Object> holder, String roomId, Event event,
-                       String arguments) {
+                          String arguments) {
         HaijinConfig config = holder.getConfig();
         MatrixClient matrixClient = holder.getMatrixClient();
 
@@ -90,8 +95,15 @@ public class Quote implements Command<HaijinConfig, HaijinDao, PersistentService
 
         if (!elements.isEmpty()) {
             Element element = elements.first();
-            String htmlText = Jsoup.clean(element.html(), new Whitelist().addTags("br"));
-            String plainText = htmlText.replaceAll("<br>", "\n").replaceAll("<br/>", "\n");
+            Elements links = element.select("a");
+            for (Element link : links) {
+                link.remove();
+            }
+            String[] origins = Jsoup.clean(element.html(), new Whitelist().addTags("br")).split("<br>");
+            List<String> lines = Arrays.stream(origins).filter(Objects::nonNull).filter(line -> !line.trim().isEmpty()).map(String::trim)
+                .collect(toList());
+            String htmlText = String.join("<br>", lines);
+            String plainText = String.join("\n", lines);
             matrixClient.event().sendFormattedNotice(roomId, plainText, htmlText);
         }
         return true;
