@@ -21,11 +21,11 @@ import static java.util.stream.Collectors.toList;
 import io.github.ma1uta.haijin.PatternConfig;
 import io.github.ma1uta.haijin.matrix.HaijinConfig;
 import io.github.ma1uta.haijin.matrix.HaijinDao;
-import io.github.ma1uta.matrix.Event;
-import io.github.ma1uta.matrix.bot.BotHolder;
 import io.github.ma1uta.matrix.bot.Command;
+import io.github.ma1uta.matrix.bot.Context;
 import io.github.ma1uta.matrix.bot.PersistentService;
 import io.github.ma1uta.matrix.client.MatrixClient;
+import io.github.ma1uta.matrix.event.RoomEvent;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.safety.Whitelist;
@@ -55,10 +55,10 @@ public class Quote implements Command<HaijinConfig, HaijinDao, PersistentService
     }
 
     @Override
-    public boolean invoke(BotHolder<HaijinConfig, HaijinDao, PersistentService<HaijinDao>, Object> holder, String roomId, Event event,
+    public boolean invoke(Context<HaijinConfig, HaijinDao, PersistentService<HaijinDao>, Object> context, String roomId, RoomEvent event,
                           String arguments) {
-        HaijinConfig config = holder.getConfig();
-        MatrixClient matrixClient = holder.getMatrixClient();
+        HaijinConfig config = context.getConfig();
+        MatrixClient matrixClient = context.getMatrixClient();
 
         if (arguments == null || arguments.trim().isEmpty()) {
             matrixClient.event().sendNotice(roomId, "Usage: " + usage());

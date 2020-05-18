@@ -18,9 +18,9 @@ package io.github.ma1uta.haijin.matrix;
 
 import io.dropwizard.lifecycle.Managed;
 import io.github.ma1uta.haijin.Configuration;
-import io.github.ma1uta.matrix.bot.Bot;
 import io.github.ma1uta.matrix.bot.BotState;
 import io.github.ma1uta.matrix.bot.PersistentService;
+import io.github.ma1uta.matrix.bot.StandaloneBot;
 import io.github.ma1uta.matrix.client.MatrixClient;
 
 import java.util.concurrent.ExecutorService;
@@ -62,20 +62,23 @@ public class HaijinPool implements Managed {
         config.setDisplayName(configuration.getDisplayName());
         config.setDeviceId(configuration.getDeviceId());
         config.setUserId(configuration.getUsername());
-        config.setPassword(configuration.getPassword());
+        config.setPassword(configuration.getPassword().toCharArray());
         config.setTimeout(configuration.getHttpClient().getTimeout().toMilliseconds() / 2);
         config.setSkipInitialSync(true);
         config.setDefaultCommand(configuration.getDefaultCommand());
         config.setOwner(configuration.getOwner());
         config.setReceiptPolicy(configuration.getReceiptPolicy());
 
-        Bot<HaijinConfig, HaijinDao, PersistentService<HaijinDao>, Object> bot = new Bot<>(
-            getClient(), configuration.getHomeserverUrl(), null, false, true, false, config, new PersistentService<>(new HaijinDao()),
-            configuration.getCommands());
+        StandaloneBot<HaijinConfig, HaijinDao, PersistentService<HaijinDao>, Object> bot = new StandaloneBot<>(
+            false, config,
+            new PersistentService<>(new HaijinDao()),
+            configuration.getCommands()
+        );
 
         bot.setInitAction((holder, dao) -> {
             MatrixClient matrixClient = holder.getMatrixClient();
-            holder.getConfig().setState(matrixClient.room().joinedRooms().isEmpty() ? BotState.REGISTERED : BotState.JOINED);
+            holder.getConfig()
+                .setState(matrixClient.room().joinedRooms().getJoinedRooms().isEmpty() ? BotState.REGISTERED : BotState.JOINED);
         });
 
         getExecutorService().submit(bot);
