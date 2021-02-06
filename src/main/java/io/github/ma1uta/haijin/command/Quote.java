@@ -26,6 +26,7 @@ import io.github.ma1uta.matrix.bot.Context;
 import io.github.ma1uta.matrix.bot.PersistentService;
 import io.github.ma1uta.matrix.client.MatrixClient;
 import io.github.ma1uta.matrix.event.RoomEvent;
+import org.apache.commons.lang3.RandomUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.safety.Whitelist;
@@ -72,10 +73,17 @@ public class Quote implements Command<HaijinConfig, HaijinDao, PersistentService
             return false;
         }
 
+        long minIndex = config.getMinIndex();
+        long maxIndex = config.getMaxIndex();
+        long poetryIndex = RandomUtils.nextLong(minIndex, maxIndex + 1);
+
         String siteAddress = patternConfig.get().getUrl();
+        if (!siteAddress.endsWith("/")) {
+            siteAddress += "/";
+        }
         URL url;
         try {
-            url = new URL(siteAddress);
+            url = new URL(siteAddress + poetryIndex);
         } catch (MalformedURLException e) {
             String msg = "wrong site url: " + e.getMessage();
             LOGGER.error(msg, e);

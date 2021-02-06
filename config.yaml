@@ -1,3 +1,5 @@
+minIndex: 19339
+maxIndex: 21034
 patterns:
   - alias: "1"
     url: "http://google.com"

@@ -26,6 +26,10 @@ import java.util.List;
  */
 public class HaijinConfig extends BotConfig {
 
+    private Long maxIndex;
+
+    private Long minIndex;
+
     private List<PatternConfig> patterns;
 
     public List<PatternConfig> getPatterns() {
@@ -34,5 +38,21 @@ public class HaijinConfig extends BotConfig {
 
     public void setPatterns(List<PatternConfig> patterns) {
         this.patterns = patterns;
+    }
+
+    public Long getMaxIndex() {
+        return maxIndex;
+    }
+
+    public void setMaxIndex(Long maxIndex) {
+        this.maxIndex = maxIndex;
+    }
+
+    public Long getMinIndex() {
+        return minIndex;
+    }
+
+    public void setMinIndex(Long minIndex) {
+        this.minIndex = minIndex;
     }
 }

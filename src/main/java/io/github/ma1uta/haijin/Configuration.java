@@ -24,13 +24,13 @@ import io.github.ma1uta.haijin.matrix.HaijinDao;
 import io.github.ma1uta.matrix.bot.Command;
 import io.github.ma1uta.matrix.bot.PersistentService;
 import io.github.ma1uta.matrix.bot.ReceiptPolicy;
-import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
 import org.hibernate.validator.constraints.URL;
 
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -63,6 +63,10 @@ public class Configuration extends io.dropwizard.Configuration {
     private List<Class<? extends Command<HaijinConfig, HaijinDao, PersistentService<HaijinDao>, Object>>> commands = new ArrayList<>();
 
     private List<PatternConfig> patterns;
+
+    private Long minIndex;
+
+    private Long maxIndex;
 
     private String owner;
 
@@ -131,6 +135,22 @@ public class Configuration extends io.dropwizard.Configuration {
 
     public void setPatterns(List<PatternConfig> patterns) {
         this.patterns = patterns;
+    }
+
+    public Long getMinIndex() {
+        return minIndex;
+    }
+
+    public void setMinIndex(Long minIndex) {
+        this.minIndex = minIndex;
+    }
+
+    public Long getMaxIndex() {
+        return maxIndex;
+    }
+
+    public void setMaxIndex(Long maxIndex) {
+        this.maxIndex = maxIndex;
     }
 
     public String getDefaultCommand() {
